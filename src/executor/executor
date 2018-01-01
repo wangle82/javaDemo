@@ -1,0 +1,90 @@
+线程池的技术: 如果每个请求创建一个新的线程，会导致性能上上的瓶颈，线程池可以保证线程对象的复用.
+Executor框架：
+   Executors线程工厂类
+       (1) newSingleThreadScheduledExecutor() :
+       (2) newScheduledThreadPool(): 返回ScheduleExecutorService对象。
+           都可以在某个固定时间的延时之后执行，或者周期性执行某个任务。
+           与其他线程池不同的时，返回的是一个ScheduledExecutorService
+       无界线程池
+       (3)ExecutorService executorService = Executors.newCachedThreadPool();
+       有界线程池
+       (4)ExecutorService executorService = Executors.newFixedThreadPook(int);
+       单一线程池
+       (5)ExecutorService executorService = Executors.newSingleThreadExecutor(int);
+
+   ThreadPoolExecutor 构造方法
+       ThreadPoolExecutor(int corePoolSize, int maximumPoolSize,long keepAliveTime, TimeUnit unit,BlockingQueue<Runnable> workQueue,RejectedExecutionHandler handler)
+       参数含义
+           corePoolSize： 线程池维护线程的标准线程数
+           maximumPoolSize：线程池维护线程的最大数量
+           keepAliveTime： 线程池维护线程所允许的空闲时间 (当线程数量大于corePoolSize时候，在没有超过指定的时间内是不从线程池中将空闲线程删除的，如果超过此时间单位，则删除)
+           unit： 线程池维护线程所允许的空闲时间的单位
+           workQueue： 线程池所使用的执行任务的缓冲队列
+                ArrayBlockingQueue: 有界队列
+                                    当使用有界的队列时
+                                    若有新的任务需要执行，如果线程池的实现线程数小于corePoolSize，则会优先创建新的线程
+                                    若大于corePoolSize，则会将新任务加入等待队列。
+                                    若等待队列已满，无法加入，则在总线程不大于maximumPoolSize的前提下，创建新的进程执行任务。
+                                    若大于maximumPoolSize,则执行拒绝策略。
+                                    综上：只有当有界队列满时，才可能线程数提升到corePoolSize以上，但是不能超过maximumPoolSize
+                LinkedBlockingQueue: 无界队列
+                                    当有新的任务到来，系统的线程数小于corePoolSize时，线程池会生产新的线程执行任务，
+                                    但当系统的线程数达到corePoolSize，就不会继续增加。
+                                    随后的任务一直会加入队列中。最大值Integer.MAX_VALUE
+                SynchronousQueue : 可以理解他是一个数据交换通道
+                    是一个特殊的BlockingQueue。没有实际容量(不存放数据，而是存放线程)
+                    每个插入操作都要等待一个相应的删除操作。相反，每个删除操作都要等到相应的插入操作。
+                    如果没有空闲线程，则尝试创建新的线程，如果线程数量已经达到最大值，则执行拒绝操作。
+                PriorityBlockingQueue: 优先级队列
+                    优先任务队列时带执行优先级的队列，它PriorityBlockingQueue实现，可以控制任务的执行顺序。
+           handler： 线程池对拒绝任务的处理策略
+                当任务数量超过系统实际承载能力时，就是线程池中的线程已经用完，无法继续为新任务服务，同时等待队列已经排满，再也塞不下新任务。
+                1、AbortPolicy：该策略会直接抛出异常
+                2、CallerRunsPolicy：在调用者线程中（启动线程池的主线程中）运行当前被丢弃的任务
+                3、DiscardOledestPolicy:丢弃最老的任务，提交当前任务
+                4、DiscardPolicy：如果这个任务允许丢弃，就会丢弃
+
+           ThreadFactory: newThread方法，要新建线程时，就会调用这个方法。
+
+           线程池的大小：公式
+                    cpu 数量
+                    ucpu 目标cpu使用率
+                    w/c 等待时间与计算时间的比
+                    nthread = cpu * ucpu * （1+w/c）
+
+
+SynchronousQueue和LinkedBlockingQueue 都是无区分
+SynchronousQueue： 超过corePoolSize，马上创建一个新线程执行任务,会有最大的线程数量maximumPoolSize限制
+LinkedBlockingQueue:超过corePoolSize, 不在创建一个新线程，而是加入一个队列,如果处理任务的速度小于加入队列的任务速度，就会内存溢出。
+
+主要方法
+    isShutdown : 判断线程池是否结束
+    shutdown() :
+        是使当前未执行完的线程继续执行，不在添加新的任务Task,还有shutdown方法不会阻塞，调用完shutdown方法后，主线程main马上结束
+    shutdownNow() :
+        如果使用if(Thread.currentThread().isInterrupted()== true)语句来判断当前线程的中断状态 中断所有的任务Task，并且抛出InterruptedException异常,
+        而未执行的线程不在执行,也就是从执行队列中清除
+        如果没有使用if(Thread.currentThread().isInterrupted()== true),则池中正在运行的线程直到执行完毕,而未执行的线程不在执行,也就是从执行队列中清除
+
+    afterExecute():
+    beforeExecute():
+定制化线程工厂
+    new MyThreadFactoryA()
+定义拒绝策略
+    new MyRejectedExecutionHandler()
+
+    submit和execute方法的区别
+    execute:
+        如果一个任务被提交了，但是没有运行，remove是可以取消这个任务的
+        没有返回值，默认不可以捕获异常
+    submit:
+        如果一个任务被提交了,是不可以取消了
+        有返回值，可以捕获异常
+
+ScheduledExecutorService使用：主要功能可以将定时任务与线程池结合使用
+schedule方法: 延时执行任务
+scheduleAtFixedRate 方法：周期性执行任务
+
+
+
+

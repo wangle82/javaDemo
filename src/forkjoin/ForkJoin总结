@@ -1,0 +1,11 @@
+ForkJoin
+具体描述：比如要完成一个比较大的任务，完全可以把这个任务分割为若干个子任务，这些子任务分别放到不同的队列里来执行，这时候可以有的线程
+已经把自己的工作队列里面的任务都执行完成了，这样就可以去帮助其他线程的任务队列，去执行任务, 最后每个小任务得到的结果进行汇总。
+
+实现方式：
+ForkJoinPool类所提供的功能是一个任务池，而执行具体任务却不是ForkJoinPool,而是ForkJoinTask
+ForkJoinTask有下面3个子类来实现具体的功能
+CountedCompleter:
+RecursiveAction:
+RecursiveTask:
+

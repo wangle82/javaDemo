@@ -1,0 +1,22 @@
+一、Semaphore使用
+1、主要作用：是限制线程并发的数量，如果不限制线程并发的数量，则CPU的资源很快就耗尽,因为CPU要把时间片分配给不同的线程对象，而且上下文切换也要耗时，所以限制并发线程的数量还是有必要的
+类Semaphore的同步性
+
+Semaphore通过发放许可，来控制线程的数量，当一个线程进入的时候，会减少一个许可。 退出的时候会增加一个许可
+重要的方法：
+acquire(); 获得信号量 : 是中断方法
+release(); 释放信号量
+availablePermits(); 当前信号量数量
+drainPermits(); 信号量重置设为0
+acquireUninterruptibly(); 可中断获取信号量
+getQueueLength();等待信号量的线程数量,放入到队列中
+hasQueuedThreads();是否有等待线程
+tryAcquire();可以获得不到信号量是，走其他分支, 可以实现无阻塞
+
+2、使用Semaphore可以有效对并发任务的线程数量进行限制，可以使用在pool技术中
+
+
+
+
+
+

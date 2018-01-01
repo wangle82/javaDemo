@@ -1,0 +1,13 @@
+Future可以从线程中返回数据，以便后续整体处理
+方法:
+get() 阻塞
+isDone() 判断是否完成
+cancel() 中断: 需要与Thread.currentThread().isInterrupted()进行配合使用
+isCancelled() 是否中断
+Future使用的实现类FutureTask,但是使用get()方法是阻塞的，会影响性能,会对整体有影响
+
+可以使用CompletionService: 可以一边生产新的任务，一边处理已经完成的任务
+使用CompletionService接口，那个任务先执行完，那个任务的返回值就先打印
+方法: submit\take
+提交给ExecutorCompletionService的任务，会被封装成一个QueueingFuture（一个FutureTask子类），此类的唯一作用就是在done()方法中，增加了将执行的FutureTask加入了内部队列，此时外部调用者，就可以take到相应的执行结束的任务。
+

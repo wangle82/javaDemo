@@ -1,0 +1,16 @@
+Phaser移相器 是 JDK1.7新增 : 更灵活 , phaser可以支持多个阶段的同步
+Phaser可以通过构造器初始化parties个数，也可以在Phaser运行期间随时加入（register）新的parties，以及在运行期间注销（deregister）parties
+而 CyclicBarrier、CountDownLatch需要在初始化的构造函数中指定同步者的个数，且运行时无法再次调整。
+主要方法：
+1、arriveAndAwaitAdavance() ：作用就是当前线程已经达到屏障，在此等待一段时间，等满足条件后继续向下一个周期继续进行,实现多周期的作用
+2、getPhase(): 使用获得的是第几个周期(阶段);getRegisteredParties(): 获取已经注册的parties个数
+3、onAdvance(): arriveAndAwaitAdavance调用后，会进入，每次进入之后，Phase会增加1，并可以继续执行下一个周期
+4、arriveAndDeregister(): 使当前线程退出，并使屏障计数减1
+5、bulkRegister(): 可以批量动态的增加屏障计数
+6、register(): 增加屏障计数1
+7、getArrivedParties()获得已经到达的屏障计数和getUnarrivedParties()获得已经未到达的屏障计数
+8、awaitAdvanceInterruptibly()指定等待的时间，如果超过时间，线程还是没有进入屏障，中断.
+
+
+
+
